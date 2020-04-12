@@ -14,7 +14,5 @@ func main() {
 	for _, c := range consumers {
 		c.Consume()
 	}
-
-	handlers := provider.GetArticleHandler()
-	log.Fatalf(mainTag, "Aborting...", http.ListenAndServe(":8000", handlers.Register()))
+	log.Fatalf(mainTag, "Aborting...", http.ListenAndServe(":8000", provider.GetHandlers()))
 }

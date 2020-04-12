@@ -11,25 +11,21 @@ import (
 )
 
 type articleHandlerImpl struct {
-	router  router.Router
 	factory model.Factory
 }
 
-func NewArticleHandler(router router.Router, factory model.Factory) *articleHandlerImpl {
+func NewArticleHandler(factory model.Factory) *articleHandlerImpl {
 	return &articleHandlerImpl{
-		router:  router,
 		factory: factory,
 	}
 }
 
-func (h *articleHandlerImpl) Register() router.Router {
-	h.router.SetPrefix("/article")
-	h.router.HandleJSON("", http.MethodGet, h.index)
-	h.router.HandleView("/view", http.MethodGet, h.view)
-	//test endpoints
-	h.router.HandleJSON("/get", http.MethodGet, h.get)
-	h.router.HandleJSON("/post", http.MethodPost, h.post)
-	return h.router
+func (h *articleHandlerImpl) Register(r router.Router) {
+	r = r.SubRouter("/article")
+	r.HandleJSON("", http.MethodGet, h.index)
+	r.HandleView("/view", http.MethodGet, h.view)
+	r.HandleJSON("/get", http.MethodGet, h.get)
+	r.HandleJSON("/post", http.MethodPost, h.post)
 }
 
 func (h *articleHandlerImpl) get(ctx context.Context, r *http.Request) (interface{}, error) {
