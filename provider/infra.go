@@ -1,11 +1,12 @@
 package provider
 
 import (
-	"github.com/cymon1997/go-backend/internal/redis"
 	"sync"
 
 	"github.com/cymon1997/go-backend/internal/database"
+	"github.com/cymon1997/go-backend/internal/elastic"
 	"github.com/cymon1997/go-backend/internal/mq"
+	"github.com/cymon1997/go-backend/internal/redis"
 )
 
 var (
@@ -17,6 +18,9 @@ var (
 
 	mqServer     mq.Server
 	syncMqClient sync.Once
+
+	esClient     elastic.Client
+	syncEsClient sync.Once
 )
 
 func GetDBClient() database.Client {
@@ -40,4 +44,12 @@ func GetMQClient() mq.Server {
 		mqServer = mq.New()
 	})
 	return mqServer
+}
+
+func GetESClient() elastic.Client {
+	syncEsClient.Do(func() {
+		cfg := GetAppConfig().ESConfig
+		esClient = elastic.New(cfg)
+	})
+	return esClient
 }

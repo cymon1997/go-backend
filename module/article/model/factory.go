@@ -1,37 +1,49 @@
 package model
 
 import (
-	"github.com/cymon1997/go-backend/internal/database"
+	"github.com/cymon1997/go-backend/entity"
 	"github.com/cymon1997/go-backend/internal/mq"
 	"github.com/cymon1997/go-backend/internal/redis"
+	"github.com/cymon1997/go-backend/module/article/repo"
 )
 
 type Factory interface {
-	NewGetByIDModel() *GetArticleModel
+	NewInsertModel(req entity.Article) *InsertArticleModel
+	NewGetByIDModel(req entity.GetArticleRequest) *GetArticleModel
 	NewHealthModel() *HealthModel
 }
 
 type articleFactory struct {
-	db        database.Client
+	dbRepo    repo.ArticleDBRepo
 	redis     redis.Client
 	publisher mq.Publisher
 }
 
-func NewArticleFactory(db database.Client, redis redis.Client, publisher mq.Publisher) Factory {
+func NewArticleFactory(dbRepo repo.ArticleDBRepo, redis redis.Client, publisher mq.Publisher) Factory {
 	return &articleFactory{
-		db:        db,
+		dbRepo:    dbRepo,
 		redis:     redis,
 		publisher: publisher,
 	}
 }
 
-func (f *articleFactory) NewGetByIDModel() *GetArticleModel {
-	return &GetArticleModel{}
+func (f *articleFactory) NewInsertModel(req entity.Article) *InsertArticleModel {
+	return &InsertArticleModel{
+		dbRepo: f.dbRepo,
+		req:    req,
+	}
+}
+
+func (f *articleFactory) NewGetByIDModel(req entity.GetArticleRequest) *GetArticleModel {
+	return &GetArticleModel{
+		dbRepo: f.dbRepo,
+		req:    req,
+	}
 }
 
 func (f *articleFactory) NewHealthModel() *HealthModel {
 	return &HealthModel{
-		dbClient:    f.db,
+		dbRepo:      f.dbRepo,
 		redisClient: f.redis,
 		publisher:   f.publisher,
 	}

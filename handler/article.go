@@ -2,7 +2,7 @@ package handler
 
 import (
 	"context"
-	"fmt"
+	"github.com/cymon1997/go-backend/entity"
 	"net/http"
 
 	"github.com/cymon1997/go-backend/internal/log"
@@ -23,26 +23,26 @@ func NewArticleHandler(factory model.Factory) *articleHandlerImpl {
 func (h *articleHandlerImpl) Register(r router.Router) {
 	r = r.SubRouter("/article")
 	r.HandleJSON("", http.MethodGet, h.index)
-	r.HandleView("/view", http.MethodGet, h.view)
-	r.HandleJSON("/get", http.MethodGet, h.get)
-	r.HandleJSON("/post", http.MethodPost, h.post)
+	r.HandleJSON("/", http.MethodPost, h.insert)
+	r.HandleJSON("/{id}", http.MethodGet, h.get)
+	//r.HandleView("/view", http.MethodGet, h.view)
 }
 
 func (h *articleHandlerImpl) get(ctx context.Context, r *http.Request) (interface{}, error) {
-	auth := r.Header.Get("Authorization")
-	query := GetQueryParam(r, "data")
-	return fmt.Sprint("GET", "\nAUTH: ", auth, "\nDATA: ", query), nil
+	return h.factory.NewGetByIDModel(entity.GetArticleRequest{
+		ID: GetURLParam(r, "id"),
+	}).Do(ctx)
 }
 
-func (h *articleHandlerImpl) post(ctx context.Context, r *http.Request) (interface{}, error) {
-	auth := r.Header.Get("Authorization")
-	var data interface{}
+func (h *articleHandlerImpl) insert(ctx context.Context, r *http.Request) (interface{}, error) {
+	//auth := r.Header.Get("Authorization")
+	var data entity.Article
 	err := ParseBody(r.Body, &data)
 	if err != nil {
 		log.ErrorDetail("Article", "error parse request body", err)
 		return nil, err
 	}
-	return fmt.Sprint("POST", "\nAUTH: ", auth, "\nDATA: ", data), nil
+	return h.factory.NewInsertModel(data).Do(ctx)
 }
 
 func (h *articleHandlerImpl) index(ctx context.Context, r *http.Request) (interface{}, error) {

@@ -1,28 +1,33 @@
+[AppConfig]
+Host = localhost
+Port = 8000
+
 [DBConfig]
-driver = mysql
-dbname = go-backend
-user = root
-password = root
-host = 127.0.0.1
-port = 3306
+Driver = postgres
+DBName = development
+User = postgres
+Password = postgres
+Host = 127.0.0.1
+Port = 5432
+SSLMode = disable
 
 [RedisConfig]
-network = tcp
-address = 127.0.0.1
-port = 6379
-idletimeout = 10
-maxactive = 30
-maxidle = 240
+Network = tcp
+Address = 127.0.0.1
+Port = 6379
+IdleTimeout = 10
+MaxActive = 30
+MaxIdle = 240
 
 [MQPublisherConfig]
-nsqdaddress = 127.0.0.1:4150
+NsqdAddress = 127.0.0.1:4150
 
 [MQConsumerConfig]
-lookupaddress = 127.0.0.1:4161
-maxattempts = 3
-maxinflight = 5
+LookupAddress = 127.0.0.1:4161
+MaxAttempts = 3
+MaxInFlight = 5
 
 [ESConfig]
-protocol = http
-host = 127.0.0.1
-port = 9200
+Protocol = http
+Host = 127.0.0.1
+Port = 9200

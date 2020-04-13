@@ -13,7 +13,8 @@ var (
 
 func GetArticleFactory() model.Factory {
 	syncArticleFactory.Do(func() {
-		articleFactory = model.NewArticleFactory(GetDBClient(), GetRedisClient(), GetPublisher())
+		articleFactory = model.NewArticleFactory(
+			GetArticleDBRepo(), GetRedisClient(), GetPublisher())
 	})
 	return articleFactory
 }

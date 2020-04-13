@@ -3,5 +3,5 @@ package router
 type Response struct {
 	Status  int         `json:"status"`
 	Message string      `json:"message"`
-	Payload interface{} `json:"payload"`
+	Payload interface{} `json:"payload,omitempty"`
 }

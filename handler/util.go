@@ -6,6 +6,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+
+	"github.com/gorilla/mux"
 )
 
 func SetHeaders(req *http.Request, headers map[string]string) {
@@ -15,10 +17,21 @@ func SetHeaders(req *http.Request, headers map[string]string) {
 	}
 }
 
+//GetURLParam
+//ex: domain.com/{id}
+func GetURLParam(r *http.Request, key string) string {
+	queries := mux.Vars(r)
+	return queries[key]
+}
+
+//GetQueryParam
+//ex: domain.com/search?id=1
 func GetQueryParam(r *http.Request, key string) string {
 	return r.URL.Query().Get(key)
 }
 
+//GetQueryParams
+//ex: domain.com/search?status=1&status=2
 func GetQueryParams(r *http.Request, key string) []string {
 	return r.URL.Query()[key]
 }

@@ -4,17 +4,17 @@ import (
 	"context"
 
 	"github.com/cymon1997/go-backend/entity"
-	"github.com/cymon1997/go-backend/internal/database"
 	"github.com/cymon1997/go-backend/internal/log"
 	"github.com/cymon1997/go-backend/internal/mq"
 	"github.com/cymon1997/go-backend/internal/redis"
+	"github.com/cymon1997/go-backend/module/article/repo"
 )
 
 const healthTag = "Article|Health"
 
 type HealthModel struct {
+	dbRepo      repo.ArticleDBRepo
 	redisClient redis.Client
-	dbClient    database.Client
 	publisher   mq.Publisher
 }
 
@@ -32,7 +32,7 @@ func (m *HealthModel) Do(ctx context.Context) (entity.Response, error) {
 		response.Message = err.Error()
 		return response, err
 	}
-	err = m.dbClient.Dial()
+	err = m.dbRepo.Ping(ctx)
 	if err != nil {
 		log.ErrorDetail(healthTag, "error dial database: %v", err)
 		response.Message = err.Error()

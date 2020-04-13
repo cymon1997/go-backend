@@ -3,6 +3,7 @@ package router
 import (
 	"context"
 	"encoding/json"
+	"github.com/cymon1997/go-backend/internal/util"
 	"net/http"
 
 	"github.com/cymon1997/go-backend/internal/log"
@@ -57,7 +58,7 @@ func (r *routerImpl) HandleJSON(path string, method string, f func(ctx context.C
 		result, err := f(ctx, req)
 		var response *Response
 		if err != nil {
-			response = r.buildResponse(http.StatusInternalServerError, "internal server", nil)
+			response = r.buildResponse(util.ErrStatus(err), util.ErrMessage(err), nil)
 		} else {
 			response = r.buildResponse(http.StatusOK, "success", result)
 		}

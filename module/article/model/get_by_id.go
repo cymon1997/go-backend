@@ -2,15 +2,19 @@ package model
 
 import (
 	"context"
-	"time"
 
 	"github.com/cymon1997/go-backend/entity"
 	"github.com/cymon1997/go-backend/internal/log"
+	"github.com/cymon1997/go-backend/internal/uuid"
+	"github.com/cymon1997/go-backend/internal/validator"
+	"github.com/cymon1997/go-backend/module/article/repo"
 )
 
 const getArticleTag = "Article|Get"
 
 type GetArticleModel struct {
+	dbRepo repo.ArticleDBRepo
+	req    entity.GetArticleRequest
 }
 
 func (m *GetArticleModel) Do(ctx context.Context) (entity.GetArticleResponse, error) {
@@ -18,20 +22,20 @@ func (m *GetArticleModel) Do(ctx context.Context) (entity.GetArticleResponse, er
 	err := m.Validate(ctx)
 	if err != nil {
 		log.ErrorDetail(getArticleTag, "error validation: %v", err)
-		response.Message = err.Error()
 		return response, err
 	}
-	response.Data = entity.Article{
-		Title:       "Golang Project Structure",
-		Description: "How to design your golang project structure",
-		Timestamp: entity.Timestamp{
-			CreateBy:   "",
-			CreateTime: time.Now(),
-		},
+	response.Data, err = m.dbRepo.Get(ctx, m.req.ID)
+	if err != nil {
+		log.ErrorDetail(getArticleTag, "error get from db: %v", err)
+		return response, err
 	}
 	return response, nil
 }
 
 func (m *GetArticleModel) Validate(ctx context.Context) error {
-	return nil
+	v := validator.New()
+	if !uuid.IsValid(m.req.ID) {
+		v.Message("invalid uuid")
+	}
+	return v.Error()
 }
