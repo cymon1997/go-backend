@@ -3,15 +3,13 @@
 export NOW = $(shell date --rfc-3339=ns)
 
 install:
-	@echo "configuring dep"
-	@dep init
 	@echo "installing dependencies..."
-	@dep ensure -v
+	@go mod init github.com/cymon1997/go-backend
 	@echo "install success!"
 
 update:
 	@echo "updating dependencies..."
-	@dep ensure -v
+	@go mod tidy
 	@echo "update success!"
 
 build:
